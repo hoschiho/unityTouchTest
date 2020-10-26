@@ -4,9 +4,9 @@ using UnityEngine;
 public class TouchTest : MonoBehaviour
 {
     private Touch touch;
-    private float step;
+    private float speedModifier, step;
 
-    private bool tap, swipe;
+    private bool tap, isDraggig, swipeLeft, swipeRight, swipeUp, swipeDown, swipe;
     private Vector2 startTouch, swipeDelta;
     private Vector3 targetPosition = new Vector3(0, 10, 0);
     public float speed = 1.0f;
@@ -24,6 +24,8 @@ public class TouchTest : MonoBehaviour
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
 
+        speedModifier = 1;
+        step = speedModifier * Time.deltaTime;
     }
 
 
@@ -60,10 +62,23 @@ public class TouchTest : MonoBehaviour
 
     void Update()
     {
-        tap = false;
-        swipe = false;
 
-        step = speed * Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+        }
+
+        tap = false;
+        isDraggig = false;
+        swipeRight = false;
+        swipeLeft = false;
+        swipeUp = false;
+        swipeDown = false;
+
+        float step = speed * Time.deltaTime; // calculate distance to move
+
+
+
 
         // Handle screen touches.
         if (Input.touchCount > 0)
@@ -72,27 +87,36 @@ public class TouchTest : MonoBehaviour
 
             if (touch.phase == TouchPhase.Began)
             {
-                startTouch = touch.position; // set start position
-            }
 
+                startTouch = touch.position; // set start position
+                Debug.Log("start Touch is " + startTouch);
+            }
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
             {
                 swipeDelta = Vector2.zero;
                 swipeDelta = touch.position - startTouch; // calculate the differece between start & end position
+                Debug.Log("end Touch is " + touch.position);
+                Debug.Log("swipe Delta mag is " + swipeDelta.magnitude);
 
                 // Did we cross the deadzone?
-                if (swipeDelta.magnitude > 125) // A good value for a natural swipe distance
+                if (swipeDelta.magnitude > 125) // A good value for a natural swipe
                 {
+                    Debug.Log("swipe detected");
                     swipe = true;
+
                     Reset();
                 }
-                // If not, just a tap.
+                                // else, just a tap.
+
                 else
                 {
                     tap = true;
                     Reset();
+
                 }
+
                 Reset();
+                Debug.Log("touchPhase Ended / Canceled");
             }
         }
 
